@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tdkj.tdcloud.kibContent.mapper.ContentLibFileMapper">
+    
+    <resultMap type="com.tdkj.tdcloud.kibContent.entity.ContentLibFile" id="ContentLibFileResult">
+        <result property="id"    column="id"    />
+        <result property="clId"    column="cl_id"    />
+        <result property="bucketName"    column="bucket_name"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="status"    column="status"    />
+        <result property="uid"    column="uid"    />
+        <result property="url"    column="url"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectContentLibFileVo">
+        select id, cl_id, bucket_name,create_time, file_name, status, uid, url from content_lib_file
+    </sql>
+
+    <select id="selectContentLibFileList" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentLibFile" resultMap="ContentLibFileResult">
+        <include refid="selectContentLibFileVo"/>
+        <where>  
+            <if test="clId != null "> and cl_id = #{clId}</if>
+            <if test="bucketName != null  and bucketName != ''"> and bucket_name like concat('%', #{bucketName}, '%')</if>
+            <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="uid != null "> and uid = #{uid}</if>
+            <if test="url != null  and url != ''"> and url = #{url}</if>
+        </where>
+    </select>
+    
+    <select id="selectContentLibFileById" parameterType="Long" resultMap="ContentLibFileResult">
+        <include refid="selectContentLibFileVo"/>
+        where id = #{id}
+    </select>
+
+	<select id="selectContentLibFileByClId" parameterType="Long" resultMap="ContentLibFileResult">
+		<include refid="selectContentLibFileVo"/>
+		where cl_id = #{clId}
+	</select>
+        
+    <insert id="insertContentLibFile" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentLibFile">
+        insert into content_lib_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="clId != null">cl_id,</if>
+            <if test="bucketName != null">bucket_name,</if>
+            <if test="fileName != null">file_name,</if>
+            <if test="status != null">status,</if>
+            <if test="uid != null">uid,</if>
+            <if test="url != null">url,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="clId != null">#{clId},</if>
+            <if test="bucketName != null">#{bucketName},</if>
+            <if test="fileName != null">#{fileName},</if>
+            <if test="status != null">#{status},</if>
+            <if test="uid != null">#{uid},</if>
+            <if test="url != null">#{url},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateContentLibFile" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentLibFile">
+        update content_lib_file
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="clId != null">cl_id = #{clId},</if>
+            <if test="bucketName != null">bucket_name = #{bucketName},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="url != null">url = #{url},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteContentLibFileById" parameterType="Long">
+        delete from content_lib_file where id = #{id}
+    </delete>
+
+	<delete id="deleteContentLibFileByFileName" >
+		delete from content_lib_file where bucket_name = #{bucketName} and file_name = #{fileName}
+	</delete>
+
+	<delete id="deleteContentLibFileByClId" parameterType="Long">
+		delete from content_lib_file where cl_id = #{clId}
+	</delete>
+
+    <delete id="deleteContentLibFileByIds" parameterType="String">
+        delete from content_lib_file where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

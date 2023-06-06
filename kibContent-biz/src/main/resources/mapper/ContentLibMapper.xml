@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, tdcloud All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: tdcloud
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tdkj.tdcloud.kibContent.mapper.ContentLibMapper">
+
+  <resultMap id="contentLibMap" type="com.tdkj.tdcloud.kibContent.entity.ContentLib">
+        <id property="id" column="id"/>
+        <result property="chineseName" column="chinese_name"/>
+        <result property="libName" column="lib_name"/>
+        <result property="libAbstract" column="lib_abstract"/>
+        <result property="createTime" column="create_time"/>
+        <result property="isDelete" column="is_delete"/>
+  </resultMap>
+
+	<sql id="selectContentLibVo">
+		select id, chinese_name, lib_name, lib_abstract, icon, create_time, is_delete from content_lib
+	</sql>
+
+	<select id="selectContentLibList" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentLib" resultMap="contentLibMap">
+		<include refid="selectContentLibVo"/>
+		<where>
+			<if test="chineseName != null  and chineseName != ''"> and chinese_name like concat('%', #{chineseName}, '%')</if>
+			<if test="libName != null  and libName != ''"> and lib_name like concat('%', #{libName}, '%')</if>
+			<if test="libAbstract != null  and libAbstract != ''"> and lib_abstract = #{libAbstract}</if>
+			<if test="icon != null  and icon != ''"> and icon = #{icon}</if>
+			<if test="isDelete != null "> and is_delete = #{isDelete}</if>
+		</where>
+	</select>
+
+	<select id="selectContentLibById" parameterType="Long" resultMap="contentLibMap">
+		<include refid="selectContentLibVo"/>
+		where id = #{id}
+	</select>
+
+	<insert id="insertContentLib" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentLib" useGeneratedKeys="true" keyProperty="id">
+		insert into content_lib
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="chineseName != null">chinese_name,</if>
+			<if test="libName != null">lib_name,</if>
+			<if test="libAbstract != null">lib_abstract,</if>
+			<if test="createTime != null">create_time,</if>
+			<if test="isDelete != null">is_delete,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="chineseName != null">#{chineseName},</if>
+			<if test="libName != null">#{libName},</if>
+			<if test="libAbstract != null">#{libAbstract},</if>
+			<if test="createTime != null">#{createTime},</if>
+			<if test="isDelete != null">#{isDelete},</if>
+		</trim>
+	</insert>
+
+	<update id="updateContentLib" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentLib">
+		update content_lib
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="chineseName != null">chinese_name = #{chineseName},</if>
+			<if test="libName != null">lib_name = #{libName},</if>
+			<if test="libAbstract != null">lib_abstract = #{libAbstract},</if>
+			<if test="createTime != null">create_time = #{createTime},</if>
+			<if test="isDelete != null">is_delete = #{isDelete},</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<delete id="deleteContentLibById" parameterType="Long">
+		delete from content_lib where id = #{id}
+	</delete>
+
+	<delete id="deleteContentLibByIds" parameterType="String">
+		delete from content_lib where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>

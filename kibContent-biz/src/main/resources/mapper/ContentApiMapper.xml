@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, tdcloud All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: tdcloud
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tdkj.tdcloud.kibContent.mapper.ContentApiMapper">
+
+  <resultMap id="contentApiMap" type="com.tdkj.tdcloud.kibContent.entity.ContentApi">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+  </resultMap>
+
+	<sql id="selectContentApiVo">
+		select id, title, content, create_time from content_api
+	</sql>
+
+	<select id="selectContentApiList" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentApi" resultMap="contentApiMap">
+		<include refid="selectContentApiVo"/>
+		<where>
+			<if test="title != null  and title != ''"> and title = #{title}</if>
+			<if test="content != null  and content != ''"> and content = #{content}</if>
+		</where>
+	</select>
+
+	<select id="selectContentApiById" parameterType="Long" resultMap="contentApiMap">
+		<include refid="selectContentApiVo"/>
+		where id = #{id}
+	</select>
+
+	<insert id="insertContentApi" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentApi" useGeneratedKeys="true" keyProperty="id">
+		insert into content_api
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="title != null">title,</if>
+			<if test="content != null">content,</if>
+			<if test="createTime != null">create_time,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="title != null">#{title},</if>
+			<if test="content != null">#{content},</if>
+			<if test="createTime != null">#{createTime},</if>
+		</trim>
+	</insert>
+
+	<update id="updateContentApi" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentApi">
+		update content_api
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="title != null">title = #{title},</if>
+			<if test="content != null">content = #{content},</if>
+			<if test="createTime != null">create_time = #{createTime},</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<delete id="deleteContentApiById" parameterType="Long">
+		delete from content_api where id = #{id}
+	</delete>
+
+	<delete id="deleteContentApiByIds" parameterType="String">
+		delete from content_api where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>

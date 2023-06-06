@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, tdcloud All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: tdcloud
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tdkj.tdcloud.kibContent.mapper.ContentLibFieldMapper">
+
+  <resultMap id="contentLibFieldMap" type="com.tdkj.tdcloud.kibContent.entity.ContentLibField">
+        <id property="id" column="id"/>
+        <result property="clId" column="cl_id"/>
+        <result property="libName" column="lib_name"/>
+        <result property="itemValue" column="item_value"/>
+        <result property="label" column="label"/>
+        <result property="dictType" column="dict_type"/>
+        <result property="description" column="description"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remarks" column="remarks"/>
+        <result property="delFlag" column="del_flag"/>
+  </resultMap>
+
+	<sql id="selectContentLibFieldVo">
+		select id, cl_id, lib_name, item_value, label, dict_type, description, sort_order, create_by, update_by, create_time, update_time, remarks, del_flag from content_lib_field
+	</sql>
+
+	<select id="selectContentLibFieldList" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentLibField" resultMap="contentLibFieldMap">
+		<include refid="selectContentLibFieldVo"/>
+		<where>
+			<if test="clId != null "> and cl_id = #{clId}</if>
+			<if test="libName != null  and libName != ''"> and lib_name like concat('%', #{libName}, '%')</if>
+			<if test="itemValue != null  and itemValue != ''"> and item_value = #{itemValue}</if>
+			<if test="label != null  and label != ''"> and label = #{label}</if>
+			<if test="dictType != null  and dictType != ''"> and dict_type = #{dictType}</if>
+			<if test="description != null  and description != ''"> and description = #{description}</if>
+			<if test="sortOrder != null "> and sort_order = #{sortOrder}</if>
+			<if test="remarks != null  and remarks != ''"> and remarks = #{remarks}</if>
+		</where>
+	</select>
+
+	<select id="selectContentLibFieldById" parameterType="Long" resultMap="contentLibFieldMap">
+		<include refid="selectContentLibFieldVo"/>
+		where id = #{id}
+	</select>
+
+	<select id="selectContentLibFieldByLibName" parameterType="string" resultMap="contentLibFieldMap">
+		<include refid="selectContentLibFieldVo"/>
+		where lib_name = #{libName} and del_flag = 0
+	</select>
+
+	<insert id="insertContentLibField" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentLibField" useGeneratedKeys="true" keyProperty="id">
+		insert into content_lib_field
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="clId != null">cl_id,</if>
+			<if test="libName != null">lib_name,</if>
+			<if test="itemValue != null">item_value,</if>
+			<if test="label != null">label,</if>
+			<if test="dictType != null">dict_type,</if>
+			<if test="description != null">description,</if>
+			<if test="sortOrder != null">sort_order,</if>
+			<if test="createBy != null">create_by,</if>
+			<if test="updateBy != null">update_by,</if>
+			<if test="createTime != null">create_time,</if>
+			<if test="updateTime != null">update_time,</if>
+			<if test="remarks != null">remarks,</if>
+			<if test="delFlag != null">del_flag,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="clId != null">#{clId},</if>
+			<if test="libName != null">#{libName},</if>
+			<if test="itemValue != null">#{itemValue},</if>
+			<if test="label != null">#{label},</if>
+			<if test="dictType != null">#{dictType},</if>
+			<if test="description != null">#{description},</if>
+			<if test="sortOrder != null">#{sortOrder},</if>
+			<if test="createBy != null">#{createBy},</if>
+			<if test="updateBy != null">#{updateBy},</if>
+			<if test="createTime != null">#{createTime},</if>
+			<if test="updateTime != null">#{updateTime},</if>
+			<if test="remarks != null">#{remarks},</if>
+			<if test="delFlag != null">#{delFlag},</if>
+		</trim>
+	</insert>
+
+	<update id="updateContentLibField" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentLibField">
+		update content_lib_field
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="clId != null">cl_id = #{clId},</if>
+			<if test="libName != null">lib_name = #{libName},</if>
+			<if test="itemValue != null">item_value = #{itemValue},</if>
+			<if test="label != null">label = #{label},</if>
+			<if test="dictType != null">dict_type = #{dictType},</if>
+			<if test="description != null">description = #{description},</if>
+			<if test="sortOrder != null">sort_order = #{sortOrder},</if>
+			<if test="createBy != null">create_by = #{createBy},</if>
+			<if test="updateBy != null">update_by = #{updateBy},</if>
+			<if test="createTime != null">create_time = #{createTime},</if>
+			<if test="updateTime != null">update_time = #{updateTime},</if>
+			<if test="remarks != null">remarks = #{remarks},</if>
+			<if test="delFlag != null">del_flag = #{delFlag},</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<delete id="deleteContentLibFieldById" parameterType="Long">
+		delete from content_lib_field where id = #{id}
+	</delete>
+
+	<delete id="deleteContentLibFieldByIds" parameterType="String">
+		delete from content_lib_field where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>

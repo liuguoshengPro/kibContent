@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, tdcloud All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: tdcloud
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tdkj.tdcloud.kibContent.mapper.ContentDownloadApplyMapper">
+
+  <resultMap id="contentDownloadApplyMap" type="com.tdkj.tdcloud.kibContent.entity.ContentDownloadApply">
+        <id property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="userId" column="user_id"/>
+        <result property="applyUse" column="apply_use"/>
+        <result property="dataVolume" column="data_volume"/>
+        <result property="dataSize" column="data_size"/>
+        <result property="searchCondition" column="search_condition"/>
+        <result property="createTime" column="create_time"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="downloadUrl" column="download_url"/>
+        <result property="libName" column="lib_name"/>
+        <result property="downloadNum" column="download_num"/>
+        <result property="collectNum" column="collect_num"/>
+        <result property="isCollect" column="is_collect"/>
+        <result property="auditTime" column="audit_time"/>
+  </resultMap>
+
+	<sql id="selectContentDownloadApplyVo">
+		select id, user_name, user_id,download_num,audit_time,collect_num,is_collect, apply_use,lib_name, data_volume, data_size, search_condition, create_time, audit_status, download_url from content_download_apply
+	</sql>
+
+	<select id="selectContentDownloadApplyList" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentDownloadApply" resultMap="contentDownloadApplyMap">
+		<include refid="selectContentDownloadApplyVo"/>
+		<where>
+			<if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+			<if test="userId != null "> and user_id = #{userId}</if>
+			<if test="applyUse != null  and applyUse != ''"> and apply_use = #{applyUse}</if>
+			<if test="dataVolume != null  and dataVolume != ''"> and data_volume = #{dataVolume}</if>
+			<if test="dataSize != null "> and data_size = #{dataSize}</if>
+			<if test="searchCondition != null  and searchCondition != ''"> and search_condition = #{searchCondition}</if>
+			<if test="auditStatus != null  and auditStatus != ''"> and audit_status = #{auditStatus}</if>
+			<if test="downloadUrl != null  and downloadUrl != ''"> and download_url = #{downloadUrl}</if>
+		</where>
+	</select>
+
+	<select id="selectContentDownloadNumRank" parameterType="com.tdkj.tdcloud.kibContent.dto.ContentDownloadApplyDto" resultMap="contentDownloadApplyMap">
+		<include refid="selectContentDownloadApplyVo"/>
+		<where>
+			and is_collect = 1
+			<if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+			<if test="userId != null "> and user_id = #{userId}</if>
+			<if test="applyUse != null  and applyUse != ''"> and apply_use = #{applyUse}</if>
+			<if test="dataVolume != null  and dataVolume != ''"> and data_volume = #{dataVolume}</if>
+			<if test="dataSize != null "> and data_size = #{dataSize}</if>
+			<if test="searchCondition != null  and searchCondition != ''"> and search_condition = #{searchCondition}</if>
+			<if test="auditStatus != null  and auditStatus != ''"> and audit_status = #{auditStatus}</if>
+			<if test="downloadUrl != null  and downloadUrl != ''"> and download_url = #{downloadUrl}</if>
+		</where>
+		ORDER BY download_num DESC
+		limit #{page},#{pageSize}
+	</select>
+
+	<select id="selectContentDownloadNumRankTotal" parameterType="com.tdkj.tdcloud.kibContent.dto.ContentDownloadApplyDto" resultType="integer">
+		select count(id) from content_download_apply
+
+		<where>
+			and is_collect = 1
+			<if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+			<if test="userId != null "> and user_id = #{userId}</if>
+			<if test="applyUse != null  and applyUse != ''"> and apply_use = #{applyUse}</if>
+			<if test="dataVolume != null  and dataVolume != ''"> and data_volume = #{dataVolume}</if>
+			<if test="dataSize != null "> and data_size = #{dataSize}</if>
+			<if test="searchCondition != null  and searchCondition != ''"> and search_condition = #{searchCondition}</if>
+			<if test="auditStatus != null  and auditStatus != ''"> and audit_status = #{auditStatus}</if>
+			<if test="downloadUrl != null  and downloadUrl != ''"> and download_url = #{downloadUrl}</if>
+		</where>
+
+	</select>
+
+	<select id="selectContentDownload"  resultMap="contentDownloadApplyMap">
+		<include refid="selectContentDownloadApplyVo"/>
+
+	</select>
+
+	<select id="selectContentDownloadApplyById" parameterType="Long" resultMap="contentDownloadApplyMap">
+		<include refid="selectContentDownloadApplyVo"/>
+		where id = #{id}
+	</select>
+
+	<insert id="insertContentDownloadApply" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentDownloadApply" useGeneratedKeys="true" keyProperty="id">
+		insert into content_download_apply
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userName != null">user_name,</if>
+			<if test="userId != null">user_id,</if>
+			<if test="applyUse != null">apply_use,</if>
+			<if test="dataVolume != null">data_volume,</if>
+			<if test="dataSize != null">data_size,</if>
+			<if test="searchCondition != null">search_condition,</if>
+			<if test="createTime != null">create_time,</if>
+			<if test="auditStatus != null">audit_status,</if>
+			<if test="downloadUrl != null">download_url,</if>
+			<if test="libName != null">lib_name,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="userName != null">#{userName},</if>
+			<if test="userId != null">#{userId},</if>
+			<if test="applyUse != null">#{applyUse},</if>
+			<if test="dataVolume != null">#{dataVolume},</if>
+			<if test="dataSize != null">#{dataSize},</if>
+			<if test="searchCondition != null">#{searchCondition},</if>
+			<if test="createTime != null">#{createTime},</if>
+			<if test="auditStatus != null">#{auditStatus},</if>
+			<if test="downloadUrl != null">#{downloadUrl},</if>
+			<if test="libName != null">#{libName},</if>
+		</trim>
+	</insert>
+
+	<update id="updateContentDownloadApply" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentDownloadApply">
+		update content_download_apply
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="userName != null">user_name = #{userName},</if>
+			<if test="userId != null">user_id = #{userId},</if>
+			<if test="applyUse != null">apply_use = #{applyUse},</if>
+			<if test="dataVolume != null">data_volume = #{dataVolume},</if>
+			<if test="dataSize != null">data_size = #{dataSize},</if>
+			<if test="searchCondition != null">search_condition = #{searchCondition},</if>
+			<if test="createTime != null">create_time = #{createTime},</if>
+			<if test="auditStatus != null">audit_status = #{auditStatus},</if>
+			<if test="downloadUrl != null">download_url = #{downloadUrl},</if>
+			<if test="libName != null">lib_name = #{libName},</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<update id="updateDownloadApplyAudit" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentDownloadApply">
+		update content_download_apply
+		<trim prefix="SET" suffixOverrides=",">
+
+			<if test="auditStatus != null">audit_status = #{auditStatus},</if>
+			<if test="auditReason != null">audit_reason = #{auditReason},</if>
+			<if test="auditTime != null">audit_time = #{auditTime},</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<update id="updateDownloadApplyUrl">
+		update content_download_apply
+		set download_url = #{downloadUrl}
+		where id = #{id}
+	</update>
+
+	<update id="updateDownloadApplyUrlExpire">
+		update content_download_apply
+		set download_url = #{downloadUrl},audit_status = "3"
+		where id = #{id}
+	</update>
+
+	<update id="updateDownloadNum">
+		update content_download_apply
+		set download_num = download_num + 1
+		where id = #{id}
+	</update>
+
+	<update id="updateIsCollect">
+		update content_download_apply
+		set collect_num = collect_num + 1,
+			is_collect = #{isCollect}
+		where id = #{id}
+	</update>
+	<update id="updateCollectNum">
+		update content_download_apply
+		set collect_num = collect_num - 1,
+			is_collect = #{isCollect}
+		where id = #{id}
+	</update>
+
+	<delete id="deleteContentDownloadApplyById" parameterType="Long">
+		delete from content_download_apply where id = #{id}
+	</delete>
+
+	<delete id="deleteContentDownloadApplyByIds" parameterType="String">
+		delete from content_download_apply where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>
