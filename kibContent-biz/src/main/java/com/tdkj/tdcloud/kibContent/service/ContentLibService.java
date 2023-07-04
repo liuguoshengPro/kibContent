@@ -40,4 +40,6 @@ public interface ContentLibService extends IService<ContentLib> {
 
 	Page getContentLib(Page page, ContentLibDto contentLibDto);
 	R deleteContentLibByFileName(ContentLibFile contentLibFile);
+
+	R getLibNameList();
 }

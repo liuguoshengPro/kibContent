@@ -127,4 +127,10 @@ public class ContentLibField extends Model<ContentLibField> {
     @Schema(description="delFlag")
     private String delFlag;
 
+	@TableField(exist = false)
+    private String chineseName;
+
+	@TableField(exist = false)
+	private String englishChineseName;
+
 }

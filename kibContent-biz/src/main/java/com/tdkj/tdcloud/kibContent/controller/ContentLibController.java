@@ -142,4 +142,11 @@ public class ContentLibController {
     public List<ContentLib> export(ContentLib contentLib) {
         return contentLibService.list(Wrappers.query(contentLib));
     }
+
+	@Operation(summary = "库名列表", description = "库名列表")
+	@GetMapping("/getLibNameList" )
+	//@PreAuthorize("@pms.hasPermission('kibContent_contentlibfield_view')" )
+	public R getLibNameList() {
+		return contentLibService.getLibNameList();
+	}
 }

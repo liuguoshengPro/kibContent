@@ -73,7 +73,6 @@ public class ContentLibFieldController {
 		return contentLibFieldService.getHomeLibField(libName);
 	}
 
-
     /**
      * 通过id查询字段管理
      * @param id id

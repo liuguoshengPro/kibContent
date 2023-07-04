@@ -107,6 +107,8 @@ public class ContentDownloadApply extends Model<ContentDownloadApply> {
      */
     @Schema(description="下载地址")
     private String downloadUrl;
+    private String isAgreeDownload;
+    private String type;
 
     private String auditReason;
 
@@ -114,6 +116,7 @@ public class ContentDownloadApply extends Model<ContentDownloadApply> {
     private Long downloadNum;
     private Long collectNum;
     private int isCollect;
+    private Integer parentId;
 
 
 }

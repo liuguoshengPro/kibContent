@@ -35,7 +35,8 @@ public interface ContentDownloadApplyService extends IService<ContentDownloadApp
 	R saveHomeDownloadApply(ContentDownloadApply contentDownloadApply) throws Exception;
 
 	R updateDownloadApplyAudit(ContentDownloadApply contentDownloadApply);
-	R updateDownloadApplyUrl(String id,String url);
+	R updateDownloadApplyUrl(String id,String url,String uid);
+	R updateUserIsAgreeDownload(Long id,String isAgreeDownload);
 
 	Page getHomeDownloadApplyList(Page page, ContentDownloadApplyDto contentDownloadApplyDto) throws JsonProcessingException;
 	Page getDownloadApplyList(Page page, ContentDownloadApplyDto contentDownloadApplyDto);

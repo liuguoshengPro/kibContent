@@ -52,6 +52,10 @@
 		where id = #{id}
 	</select>
 
+	<select id="selectLibNameList"  resultType="string">
+		select lib_name from content_lib
+	</select>
+
 	<insert id="insertContentLib" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentLib" useGeneratedKeys="true" keyProperty="id">
 		insert into content_lib
 		<trim prefix="(" suffix=")" suffixOverrides=",">

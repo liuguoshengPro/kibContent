@@ -40,6 +40,7 @@ public interface ContentLibMapper extends TdcloudBaseMapper<ContentLib> {
 	 * @return 库
 	 */
 	public ContentLib selectContentLibById(Long id);
+	public List<String> selectLibNameList();
 
 	/**
 	 * 查询库列表

@@ -112,8 +112,15 @@ public class ContentDownloadApplyController {
 	@Operation(summary = "保存url", description = "保存url")
 	@SysLog("保存url" )
 	@PostMapping("/updateDownloadApplyUrl" )
-	public R updateDownloadApplyUrl(@RequestParam("id") String id,@RequestParam("url")String url) {
-		return contentDownloadApplyService.updateDownloadApplyUrl(id,url);
+	public R updateDownloadApplyUrl(@RequestParam("id") String id,@RequestParam("url")String url,@RequestParam("uid")String uid) {
+		return contentDownloadApplyService.updateDownloadApplyUrl(id,url,uid);
+	}
+
+	@Operation(summary = "普通用户下载申请", description = "普通用户下载申请")
+	@SysLog("普通用户下载申请" )
+	@PostMapping("/updateUserIsAgreeDownload" )
+	public R updateUserIsAgreeDownload(@RequestParam("id") Long id,@RequestParam("isAgreeDownload") String isAgreeDownload) {
+		return contentDownloadApplyService.updateUserIsAgreeDownload(id,isAgreeDownload);
 	}
 
 

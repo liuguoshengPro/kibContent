@@ -89,7 +89,7 @@ public class ContentDownloadApplyDto extends Model<ContentDownloadApplyDto> {
      * 创建时间
      */
     @Schema(description="创建时间")
-    private LocalDateTime createTime;
+    private String[] createTime;
 
     /**
      * 审核状态
@@ -106,6 +106,7 @@ public class ContentDownloadApplyDto extends Model<ContentDownloadApplyDto> {
     private String auditReason;
 
 	private String libName;
+	private String type;
 
 	private int page;
 	private int pageSize;

@@ -60,7 +60,13 @@ public class ContentLibFieldServiceImpl extends ServiceImpl<ContentLibFieldMappe
 	@Override
 	public R getHomeLibField(String libName) {
 		List<ContentLibField> contentLibFieldList = contentLibFieldMapper.selectContentLibFieldByLibName(libName);
-
+		if (contentLibFieldList.size()>0){
+			contentLibFieldList.stream().forEach(contentLibField -> {
+				contentLibField.setChineseName(contentLibField.getItemValue());
+				contentLibField.setEnglishChineseName(contentLibField.getLabel()+"（"+contentLibField.getItemValue()+"）");
+			});
+		}
 		return R.ok(contentLibFieldList,"查询成功");
 	}
+
 }

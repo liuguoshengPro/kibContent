@@ -16,6 +16,7 @@
  */
 package com.tdkj.tdcloud.kibContent.service.impl;
 
+import cn.hutool.core.util.ArrayUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -27,16 +28,16 @@ import com.tdkj.tdcloud.common.security.util.SecurityUtils;
 import com.tdkj.tdcloud.kibContent.dto.ContentDownloadApplyDto;
 import com.tdkj.tdcloud.kibContent.dto.SearchCondition;
 import com.tdkj.tdcloud.kibContent.entity.ContentDownloadApply;
+import com.tdkj.tdcloud.kibContent.entity.EmailSender;
+import com.tdkj.tdcloud.kibContent.entity.User;
 import com.tdkj.tdcloud.kibContent.mapper.ContentDownloadApplyMapper;
 import com.tdkj.tdcloud.kibContent.service.ContentDownloadApplyService;
+import com.tdkj.tdcloud.kibContent.service.PlantMailService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 下载申请表
@@ -49,13 +50,24 @@ public class ContentDownloadApplyServiceImpl extends ServiceImpl<ContentDownload
 
 	@Resource
 	private ContentDownloadApplyMapper contentDownloadApplyMapper;
+	@Resource
+	private PlantMailService plantMailService;
 
 
 	@Override
 	public Page getDownloadApplyList(Page page, ContentDownloadApplyDto contentDownloadApplyDto){
 //		Long userId = SecurityUtils.getUser().getId();
 		QueryWrapper<ContentDownloadApply> wrapper = new QueryWrapper<>();
-//		wrapper.eq(StringUtils.isNotBlank(userId.toString()), "user_id", userId);
+//		wrapper.eq(StringUtils.isNotBlank("0", "audit_status", userId);
+		wrapper.like(StringUtils.isNotBlank(contentDownloadApplyDto.getUserName()), "user_name", contentDownloadApplyDto.getUserName());
+		wrapper.eq(StringUtils.isNotBlank(contentDownloadApplyDto.getLibName()), "lib_name", contentDownloadApplyDto.getLibName());
+		wrapper.eq(StringUtils.isNotBlank(contentDownloadApplyDto.getAuditStatus()), "audit_status", contentDownloadApplyDto.getAuditStatus());
+		wrapper.eq(StringUtils.isNotBlank(contentDownloadApplyDto.getType()), "type", contentDownloadApplyDto.getType());
+//		wrapper.eq(StringUtils.isNotBlank(contentDownloadApplyDto.getAuditStatus()), "audit_status", contentDownloadApplyDto.getAuditStatus());
+		if (ArrayUtil.isNotEmpty(contentDownloadApplyDto.getCreateTime())) {
+			wrapper.ge("create_time", contentDownloadApplyDto.getCreateTime()[0]).le("create_time",
+					contentDownloadApplyDto.getCreateTime()[1]);
+		}
 		wrapper.orderByDesc("id");
 
 		Page page1 = baseMapper.selectPage(page, wrapper);
@@ -87,6 +99,17 @@ public class ContentDownloadApplyServiceImpl extends ServiceImpl<ContentDownload
 		}
 		int i = contentDownloadApplyMapper.insertContentDownloadApply(contentDownloadApply);
 		if (i==1){
+			List<User> userList = contentDownloadApplyMapper.selectUserByEmailAdmin();
+			if (userList.size()>0){
+				userList.stream().forEach(user -> {
+					EmailSender emailSender = new EmailSender();
+					emailSender.setToEmail(user.getUsername());
+					emailSender.setEmailType("submitApply");
+					plantMailService.sendSimpleMail(emailSender);
+
+				});
+			}
+
 			return R.ok(i,"添加成功");
 		}
 		return null;
@@ -109,11 +132,34 @@ public class ContentDownloadApplyServiceImpl extends ServiceImpl<ContentDownload
 	}
 
 	@Override
-	public R updateDownloadApplyUrl(String id, String url) {
-		if (id==null || url==null){
+	public R updateDownloadApplyUrl(String id, String url,String uid) {
+		if (id==null || url==null || uid==null){
 			return R.failed("参数错误");
 		}
+
 		int i = contentDownloadApplyMapper.updateDownloadApplyUrl(url, Long.valueOf(id));
+		if (i==1){
+			if ("4".equals(url)){
+				contentDownloadApplyMapper.updateDownloadApplyAuditStatus(url, Long.valueOf(id));
+			}else {
+				contentDownloadApplyMapper.updateDownloadApplyAuditStatus("1", Long.valueOf(id));
+			}
+			EmailSender emailSender = new EmailSender();
+			String user = contentDownloadApplyMapper.selectSysUserById(uid);
+			emailSender.setToEmail(user);
+			emailSender.setEmailType("download");
+			plantMailService.sendSimpleMail(emailSender);
+			return R.ok(i,"修改成功");
+		}
+		return null;
+	}
+
+	@Override
+	public R updateUserIsAgreeDownload(Long id, String isAgreeDownload) {
+		if (id==null || isAgreeDownload==null){
+			return R.failed("参数错误");
+		}
+		int i = contentDownloadApplyMapper.updateUserIsAgreeDownload(id,isAgreeDownload);
 		if (i==1){
 			return R.ok(i,"修改成功");
 		}
@@ -125,6 +171,9 @@ public class ContentDownloadApplyServiceImpl extends ServiceImpl<ContentDownload
 		Long userId = SecurityUtils.getUser().getId();
 		QueryWrapper<ContentDownloadApply> wrapper = new QueryWrapper<>();
 		wrapper.eq(StringUtils.isNotBlank(userId.toString()), "user_id", userId);
+		if (contentDownloadApplyDto.getLibName()!=null && "".equals(contentDownloadApplyDto.getLibName())){
+			wrapper.eq(StringUtils.isNotBlank(contentDownloadApplyDto.getLibName()),"lib_name",contentDownloadApplyDto.getLibName());
+		}
 		wrapper.orderByDesc("id");
 
 		Page page1 = baseMapper.selectPage(page, wrapper);
@@ -176,7 +225,14 @@ public class ContentDownloadApplyServiceImpl extends ServiceImpl<ContentDownload
 		int total = contentDownloadApplyMapper.selectContentDownloadNumRankTotal(contentDownloadApply);
 		if (total>0){
 			List<ContentDownloadApply> contentDownloadApplyList = contentDownloadApplyMapper.selectContentDownloadNumRank(contentDownloadApply);
-
+			if(contentDownloadApplyList.size()>0){
+//				int downLoadNum = 0;
+				contentDownloadApplyList.stream().forEach(contentDownloadApply1 -> {
+					int num = contentDownloadApplyMapper.selectContentDownloadByParentId(contentDownloadApply1.getId());
+					contentDownloadApply1.setDownloadNum(num + contentDownloadApply1.getDownloadNum());
+				});
+			}
+			Collections.sort(contentDownloadApplyList, Comparator.comparing(ContentDownloadApply::getDownloadNum).reversed());
 			map.put("total",total);
 			map.put("contentDownloadApplyList",contentDownloadApplyList);
 

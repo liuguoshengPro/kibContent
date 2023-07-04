@@ -20,6 +20,7 @@ package com.tdkj.tdcloud.kibContent.mapper;
 import com.tdkj.tdcloud.common.data.datascope.TdcloudBaseMapper;
 import com.tdkj.tdcloud.kibContent.dto.ContentDownloadApplyDto;
 import com.tdkj.tdcloud.kibContent.entity.ContentDownloadApply;
+import com.tdkj.tdcloud.kibContent.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -42,6 +43,7 @@ public interface ContentDownloadApplyMapper extends TdcloudBaseMapper<ContentDow
 	 * @return 下载申请
 	 */
 	public ContentDownloadApply selectContentDownloadApplyById(Long id);
+	public String selectSysUserById(String userId);
 
 	/**
 	 * 查询下载申请列表
@@ -52,6 +54,7 @@ public interface ContentDownloadApplyMapper extends TdcloudBaseMapper<ContentDow
 	public List<ContentDownloadApply> selectContentDownloadApplyList(ContentDownloadApply contentDownloadApply);
 	public List<ContentDownloadApply> selectContentDownloadNumRank(ContentDownloadApplyDto contentDownloadApplyDto);
 	public List<ContentDownloadApply> selectContentDownload();
+	public int selectContentDownloadByParentId(Integer parentId);
 	int selectContentDownloadNumRankTotal(ContentDownloadApplyDto contentDownloadApplyDto);
 
 	/**
@@ -72,7 +75,9 @@ public interface ContentDownloadApplyMapper extends TdcloudBaseMapper<ContentDow
 	public int updateDownloadApplyAudit(ContentDownloadApply contentDownloadApply);
 	public int updateDownloadApplyUrl(@Param("downloadUrl") String downloadUrl,@Param("id")Long id);
 	public int updateDownloadApplyUrlExpire(@Param("downloadUrl") String downloadUrl,@Param("id")Long id);
+	public int updateDownloadApplyAuditStatus(@Param("auditStatus") String auditStatus,@Param("id")Long id);
 	public int updateDownloadNum(@Param("id")Long id);
+	public int updateUserIsAgreeDownload(@Param("id")Long id,@Param("isAgreeDownload")String isAgreeDownload);
 	public int updateIsCollect(@Param("id")Long id,@Param("isCollect")Integer isCollect);
 	public int updateCollectNum(@Param("id")Long id,@Param("isCollect")Integer isCollect);
 
@@ -91,4 +96,5 @@ public interface ContentDownloadApplyMapper extends TdcloudBaseMapper<ContentDow
 	 * @return 结果
 	 */
 	public int deleteContentDownloadApplyByIds(String[] ids);
+	public List<User> selectUserByEmailAdmin();
 }

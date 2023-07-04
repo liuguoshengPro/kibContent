@@ -181,6 +181,12 @@ public class ContentLibServiceImpl extends ServiceImpl<ContentLibMapper, Content
 		return R.ok("删除成功");
 	}
 
+	@Override
+	public R getLibNameList() {
+		List<String> libNameList = contentLibMapper.selectLibNameList();
+		return R.ok(libNameList,"成功");
+	}
+
 
 	public Map<String, String> getCollectionCountsFromRedis() {
 		ValueOperations<String, String> valueOps = stringRedisTemplate.opsForValue();

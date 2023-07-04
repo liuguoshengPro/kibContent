@@ -39,10 +39,13 @@
         <result property="collectNum" column="collect_num"/>
         <result property="isCollect" column="is_collect"/>
         <result property="auditTime" column="audit_time"/>
+        <result property="isAgreeDownload" column="is_agree_download"/>
+        <result property="type" column="type"/>
+        <result property="parentId" column="parent_id"/>
   </resultMap>
 
 	<sql id="selectContentDownloadApplyVo">
-		select id, user_name, user_id,download_num,audit_time,collect_num,is_collect, apply_use,lib_name, data_volume, data_size, search_condition, create_time, audit_status, download_url from content_download_apply
+		select id, user_name, user_id,download_num,type,parent_id,is_agree_download,audit_time,collect_num,is_collect, apply_use,lib_name, data_volume, data_size, search_condition, create_time, audit_status, download_url from content_download_apply
 	</sql>
 
 	<select id="selectContentDownloadApplyList" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentDownloadApply" resultMap="contentDownloadApplyMap">
@@ -98,9 +101,19 @@
 
 	</select>
 
+	<select id="selectContentDownloadByParentId"  resultType="int">
+		SELECT SUM(download_num)downloadNum FROM content_download_apply
+		where parent_id = #{parentId}
+	</select>
+
 	<select id="selectContentDownloadApplyById" parameterType="Long" resultMap="contentDownloadApplyMap">
 		<include refid="selectContentDownloadApplyVo"/>
 		where id = #{id}
+	</select>
+
+	<select id="selectSysUserById" parameterType="string" resultType="string">
+		SELECT username FROM sys_user WHERE user_id = #{userId}
+
 	</select>
 
 	<insert id="insertContentDownloadApply" parameterType="com.tdkj.tdcloud.kibContent.entity.ContentDownloadApply" useGeneratedKeys="true" keyProperty="id">
@@ -116,6 +129,9 @@
 			<if test="auditStatus != null">audit_status,</if>
 			<if test="downloadUrl != null">download_url,</if>
 			<if test="libName != null">lib_name,</if>
+			<if test="isAgreeDownload != null">is_agree_download,</if>
+			<if test="type != null">type,</if>
+			<if test="parentId != null">parent_id,</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="userName != null">#{userName},</if>
@@ -128,6 +144,9 @@
 			<if test="auditStatus != null">#{auditStatus},</if>
 			<if test="downloadUrl != null">#{downloadUrl},</if>
 			<if test="libName != null">#{libName},</if>
+			<if test="isAgreeDownload != null">#{isAgreeDownload},</if>
+			<if test="type != null">#{type},</if>
+			<if test="parentId != null">#{parentId},</if>
 		</trim>
 	</insert>
 
@@ -144,6 +163,9 @@
 			<if test="auditStatus != null">audit_status = #{auditStatus},</if>
 			<if test="downloadUrl != null">download_url = #{downloadUrl},</if>
 			<if test="libName != null">lib_name = #{libName},</if>
+			<if test="isAgreeDownload != null">is_agree_download = #{isAgreeDownload},</if>
+			<if test="type != null">type = #{type},</if>
+			<if test="parentId != null">parent_id = #{parentId},</if>
 		</trim>
 		where id = #{id}
 	</update>
@@ -168,6 +190,18 @@
 	<update id="updateDownloadApplyUrlExpire">
 		update content_download_apply
 		set download_url = #{downloadUrl},audit_status = "3"
+		where id = #{id}
+	</update>
+
+	<update id="updateDownloadApplyAuditStatus">
+		update content_download_apply
+		set audit_status = #{auditStatus}
+		where id = #{id}
+	</update>
+
+	<update id="updateUserIsAgreeDownload">
+		update content_download_apply
+		set is_agree_download = #{isAgreeDownload}
 		where id = #{id}
 	</update>
 
@@ -200,4 +234,11 @@
 			#{id}
 		</foreach>
 	</delete>
+
+	<select id="selectUserByEmailAdmin" resultType="com.tdkj.tdcloud.kibContent.entity.User">
+		SELECT su.user_id userId,su.username username,su.`name` name,
+		       sr.role_id roleId,sr.role_name roleName
+		FROM sys_user su INNER JOIN sys_user_role sur ON su.user_id = sur.user_id
+		LEFT JOIN sys_role sr ON sur.role_id = sr.role_id WHERE sr.role_code = 'EMAIL_ADMIN'
+	</select>
 </mapper>
